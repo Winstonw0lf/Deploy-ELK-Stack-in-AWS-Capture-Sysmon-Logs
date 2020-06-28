@@ -52,11 +52,11 @@ sudo bash -c 'echo server.port: 5601 >> /etc/kibana/kibana.yml &&
 
 #To allow connections from remote users, set this parameter to a non-loopback address.
 
-sudo bash -c 'echo server.host: "IP.OF.ELK.SERVER" >> /etc/kibana/kibana.yml &&
+sudo bash -c 'echo server.host: "127.0.0.1" >> /etc/kibana/kibana.yml &&
 
 #Set the Elasticsearch URL
 
-sudo bash -c 'echo elasticsearch.hosts: ["http://IP.OF.ELK.SERVER:9200"] >> /etc/kibana/kibana.yml &&
+sudo bash -c 'echo elasticsearch.hosts: ["http://localhost:9200"] >> /etc/kibana/kibana.yml &&
 
 #start Kibana
 
@@ -172,7 +172,7 @@ apt install xterm &&
 
 #verify connection to elastic search
 
-xterm -e telnet 192.168.0.101 9200 &&
+xterm -e telnet 192.168.0.101:9200 &&
 
 xterm -e filebeat setup --index-management -E output.logstash.enabled=false -E 'output.elasticsearch.hosts=["localhost:9200"] &&
 
