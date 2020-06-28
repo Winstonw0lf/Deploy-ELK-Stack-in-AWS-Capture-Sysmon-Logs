@@ -1,0 +1,199 @@
+#!/bin/bash
+
+
+#Import the Elastic stack PGP repository signing Key
+
+sudo wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch --no-check-certificate | sudo apt-key add - &&
+
+#install Elasicsearch;
+
+echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-7.x.list &&
+
+#Update package cache and install Elasticsearch;
+
+apt update &&
+
+apt install elasticsearch &&
+
+#EC2 Discovery plug for AWS
+
+sudo bin/elasticsearch-plugin install discovery-ec2 &&
+
+#configure Elastic Search
+
+sudo bash -c 'echo cluster.name : ELK-Server >> /etc/elasticsearch/elasticsearch.yml' &&
+
+sudo bash -c 'echo network.host: IP.OF.SERVER.ELK >> /etc/elasticsearch/elasticsearch.yml' &&
+
+sudo bash -c 'echo http.port: 9200 >> /etc/elasticsearch/elasticsearch.yml' &&
+
+sudo bash -c 'echo discovery.type: single-node >> /etc/elasticsearch/elasticsearch.yml' &&
+
+#configure JVM heap size
+
+sudo bash -c 'echo -Xms512m >> /etc/elasticsearch/jvm.options' &&
+
+#Running Elasticseach
+
+systemctl enable --now elasticsearch &&
+
+
+#Install Kibana
+
+apt install kibana &&
+
+#open port 5601 for Kibana
+
+ufw allow 5601/tcp &&
+
+#configure Kibana
+
+sudo bash -c 'echo server.port: 5601 >> /etc/kibana/kibana.yml &&
+
+#To allow connections from remote users, set this parameter to a non-loopback address.
+
+sudo bash -c 'echo server.host: "IP.OF.ELK.SERVER" >> /etc/kibana/kibana.yml &&
+
+#Set the Elasticsearch URL
+
+sudo bash -c 'echo elasticsearch.hosts: ["http://IP.OF.ELK.SERVER:9200"] >> /etc/kibana/kibana.yml &&
+
+#start Kibana
+
+systemctl enable --now kibana &&
+
+#Installing Logstash 
+
+#checks to see if Java is installed, if not it will install
+
+dependency_check_deb() {
+java -version
+if [ $? -ne 0 ]
+    then
+# Installing Java 8 if it's not installed
+        sudo apt-get install openjdk-8-jre-headless -y
+# Checking if java installed is less than version 7. If yes, installing Java 7. As logstash & Elasticsearch require Java 7 or later.
+    elif [ "`java -version 2> /tmp/version && awk '/version/ { gsub(/"/, "", $NF); print ( $NF < 1.8 ) ? "YES" : "NO" }' /tmp/version`" == "YES" ]
+        then
+            sudo apt-get install openjdk-8-jre-headless -y
+fi
+}
+
+dependency_check_rpm() {
+    java -version
+    if [ $? -ne 0 ]
+        then
+#Installing Java 8 if it's not installed
+            sudo yum install jre-1.8.0-openjdk -y
+# Checking if java installed is less than version 7. If yes, installing Java 8. As logstash & Elasticsearch require Java 7 or later.
+        elif [ "`java -version 2> /tmp/version && awk '/version/ { gsub(/"/, "", $NF); print ( $NF < 1.8 ) ? "YES" : "NO" }' /tmp/version`" == "YES" ]
+            then
+                sudo yum install jre-1.8.0-openjdk -y
+    fi
+}
+
+
+#installing logstash
+
+apt install logstash &&
+
+#Configure Logstash Input plugin
+
+touch /etc/logstash/conf.d/beats-input.conf &&
+
+sudo bash -c "echo input {
+  beats {
+    port => 5044
+  }
+}" >> /etc/logstash/conf.d/beats-input.conf &&
+
+#Configure Logstash Output
+
+touch /etc/logstash/conf.d/elasticsearch-output.conf &&
+
+sudo bash -c "echo output {
+   elasticsearch {
+     hosts => ["localhost:9200"]
+     manage_template => false
+     index => "ssh_auth-%{+YYYY.MM}"
+ }
+}" >> /etc/logstash/conf.d/elasticsearch-output.conf &&
+
+#Install Filebeat from Elastic repos
+
+apt install filebeat &&
+
+
+#I could not find a way to comment out part of a config file so I decided to create an entirely new one and delete the old config file
+
+#delete old file
+
+rm -f /etc/filebeat/filebeat.yml &&
+
+#create new config file
+
+touch /etc/filebeat/filebeat.yml &&
+
+sudo bash -c "echo filebeat.inputs:
+
+- type: log
+  enabled: false
+  Paths:
+    - /var/log*.log
+
+filebeat.config.modules:
+  path: ${path.config}/modules.d/*.yml
+  reload.enabled: false  
+
+
+setup.template.settings:
+  index.number_of_shards: 3
+
+setup.kibana
+
+output.logstash:
+  # The Logstash hosts
+  hosts: ["localhost:5044"]
+
+processors:
+  - add_host_metadata: ~
+  - add_cloud_metadata: ~" >> /etc/filebeat/filebeat.yml &&
+
+#Enable Filebeat System Module and verify
+
+filebeat modules enable system && filebeat modules list &&
+
+#installs Xterm to open verification in new terminals 
+
+apt install xterm &&
+
+
+#verifications are below
+
+#verify connection to elastic search
+
+xterm -e telnet 192.168.0.101 9200 &&
+
+xterm -e filebeat setup --index-management -E output.logstash.enabled=false -E 'output.elasticsearch.hosts=["localhost:9200"] &&
+
+#verify Elastic search data reception
+
+
+xterm -e curl -X GET localhost:9200/_cat/indices?v &&
+
+#Check ssh_auth-2019.05 index;
+
+xterm -e curl -X GET localhost:9200/ssh_auth-*/_search?pretty &&
+
+
+#to test if elastic search is working
+
+xterm -e curl http://localhost:9200 &&
+
+#this commands tests logstash
+
+xterm -e sudo -u logstash /usr/share/logstash/bin/logstash --path.settings /etc/logstash -t &&
+
+
+
+echo please check all the verifications on the terminals that popup. If all is well everything is configured correctly
