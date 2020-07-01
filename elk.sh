@@ -147,33 +147,11 @@ systemctl enable --now kibana &&\
 
 #Installing Logstash 
 
-#checks to see if Java is installed, if not it will install
-
-dependency_check_deb() {
-java -version
-if [ $? -ne 0 ]
-    then
-# Installing Java 8 if it's not installed
-        sudo apt-get install openjdk-8-jre-headless -y
-# Checking if java installed is less than version 7. If yes, installing Java 7. As logstash & Elasticsearch require Java 7 or later.
-    elif [ "`java -version 2> /tmp/version && awk '/version/ { gsub(/"/, "", $NF); print ( $NF < 1.8 ) ? "YES" : "NO" }' /tmp/version`" == "YES" ]
-        then
-            sudo apt-get install openjdk-8-jre-headless -y
-fi
-}
-
-dependency_check_rpm() {
-    java -version
-    if [ $? -ne 0 ]
-        then
 #Installing Java 8 if it's not installed
-            sudo yum install jre-1.8.0-openjdk -y
-# Checking if java installed is less than version 7. If yes, installing Java 8. As logstash & Elasticsearch require Java 7 or later.
-        elif [ "`java -version 2> /tmp/version && awk '/version/ { gsub(/"/, "", $NF); print ( $NF < 1.8 ) ? "YES" : "NO" }' /tmp/version`" == "YES" ]
-            then
-                sudo yum install jre-1.8.0-openjdk -y
-    fi
-} &&\
+
+sudo apt-get install openjdk-8-jre-headless -y  &&\
+
+sudo yum install jre-1.8.0-openjdk -y  &&\
 
 
 #installing logstash
