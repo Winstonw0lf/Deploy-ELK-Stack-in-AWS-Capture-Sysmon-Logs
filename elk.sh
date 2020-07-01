@@ -17,13 +17,13 @@ apt install elasticsearch &&\
 
 #EC2 Discovery plug for AWS
 
-sudo bin/elasticsearch-plugin install discovery-ec2 &&\
+#sudo bin/elasticsearch-plugin install discovery-ec2 &&\
 
 #configure Elastic Search
 
 sudo bash -c 'echo cluster.name : ELK-Server >> /etc/elasticsearch/elasticsearch.yml' &&\
 
-sudo bash -c 'echo network.host: 172.31.22.1 >> /etc/elasticsearch/elasticsearch.yml' &&\
+sudo bash -c 'echo network.host: 172.31.29.191 >> /etc/elasticsearch/elasticsearch.yml' &&\
 
 sudo bash -c 'echo http.port: 9200 >> /etc/elasticsearch/elasticsearch.yml' &&\
 
@@ -52,17 +52,17 @@ sudo bash -c 'echo server.port: 5601 >> /etc/kibana/kibana.yml &&\
 
 #To allow connections from remote users, set this parameter to a non-loopback address.
 
-sudo bash -c 'echo server.host: "172.31.22.1" >> /etc/kibana/kibana.yml &&\
+sudo bash -c 'echo server.host: "172.31.29.191" >> /etc/kibana/kibana.yml &&\
 
 #Set the Elasticsearch URL
 
-sudo bash -c 'echo elasticsearch.hosts: ["http://172.31.22.1:9200"] >> /etc/kibana/kibana.yml &&\
+sudo bash -c 'echo elasticsearch.hosts: ["http://172.31.29.191:9200"] >> /etc/kibana/kibana.yml &&\
 
 #Configure Nginx with SSL to Proxy Kibana
 
 #install Nginx
 
-Install Nginx &&\
+apt-get install nginx &&\
 
 #Generate Self-signed SSL/TLS certificates
 
@@ -79,12 +79,12 @@ touch /etc/nginx/sites-available/kibana &&\
 
 sudo bash -c "echo server {
         listen 80;
-        server_name 172.31.22.1;
+        server_name 172.31.29.191;
         return 301 https://$host$request_uri;
 }
 server {
         listen 443 ssl;
-        server_name ip-172-31-22-1;
+        server_name ip-172-31-29-191;
 
         root /var/www/html;
         index index.html index.htm index.nginx-debian.html;
@@ -182,33 +182,33 @@ sudo bash -c "echo output {
 
 #installs Xterm to open verification in new terminals 
 
-apt install xterm &&\
+#apt install xterm &&\
 
 
 #verifications are below
 
 #verify connection to elastic search
 
-xterm -e telnet 192.168.0.101 9200 &&\
+#xterm -e telnet 192.168.0.101 9200 &&\
 
-xterm -e filebeat setup --index-management -E output.logstash.enabled=false -E 'output.elasticsearch.hosts=["localhost:9200"] &&\
+
 
 #verify Elastic search data reception
 
 
-xterm -e curl -X GET localhost:9200/_cat/indices?v &&\
+#curl -X GET localhost:9200/_cat/indices?v &&\
 
 #Check ssh_auth-2019.05 index;
 
-xterm -e curl -X GET localhost:9200/ssh_auth-*/_search?pretty &&\
+#xcurl -X GET localhost:9200/ssh_auth-*/_search?pretty &&\
 
 #to test if elastic search is working
 
-xterm -e curl http://localhost:9200 &&\
+#curl http://localhost:9200 &&\
 
 #this commands tests logstash
 
-xterm -e sudo -u logstash /usr/share/logstash/bin/logstash --path.settings /etc/logstash -t &&\
+#sudo -u logstash /usr/share/logstash/bin/logstash --path.settings /etc/logstash -t &&\
 
 
 
