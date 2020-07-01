@@ -23,7 +23,7 @@ sudo bin/elasticsearch-plugin install discovery-ec2 &&\
 
 sudo bash -c 'echo cluster.name : ELK-Server >> /etc/elasticsearch/elasticsearch.yml' &&\
 
-sudo bash -c 'echo network.host: IP.OF.SERVER.ELK >> /etc/elasticsearch/elasticsearch.yml' &&\
+sudo bash -c 'echo network.host: 172.31.22.1 >> /etc/elasticsearch/elasticsearch.yml' &&\
 
 sudo bash -c 'echo http.port: 9200 >> /etc/elasticsearch/elasticsearch.yml' &&\
 
@@ -52,7 +52,7 @@ sudo bash -c 'echo server.port: 5601 >> /etc/kibana/kibana.yml &&\
 
 #To allow connections from remote users, set this parameter to a non-loopback address.
 
-sudo bash -c 'echo server.host: "IP.OF.ELK.SERVER" >> /etc/kibana/kibana.yml &&\
+sudo bash -c 'echo server.host: "172.31.22.1" >> /etc/kibana/kibana.yml &&\
 
 #Set the Elasticsearch URL
 
