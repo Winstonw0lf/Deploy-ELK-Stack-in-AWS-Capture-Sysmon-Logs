@@ -56,7 +56,7 @@ sudo bash -c 'echo server.host: "IP.OF.ELK.SERVER" >> /etc/kibana/kibana.yml &&\
 
 #Set the Elasticsearch URL
 
-sudo bash -c 'echo elasticsearch.hosts: ["http://IP.OF.ELK.SERVER:9200"] >> /etc/kibana/kibana.yml &&\
+sudo bash -c 'echo elasticsearch.hosts: ["http://172.31.22.1:9200"] >> /etc/kibana/kibana.yml &&\
 
 #Configure Nginx with SSL to Proxy Kibana
 
@@ -77,17 +77,14 @@ openssl dhparam -out /etc/nginx/dhparam.pem 2048 &&\
 
 touch /etc/nginx/sites-available/kibana &&\
 
-sudo bash -c 'echo 
-
-
-server {
+sudo bash -c "echo server {
         listen 80;
-        server_name my.ip.address.here;
+        server_name 172.31.22.1;
         return 301 https://$host$request_uri;
 }
 server {
         listen 443 ssl;
-        server_name elk.example.com;
+        server_name ip-172-31-22-1;
 
         root /var/www/html;
         index index.html index.htm index.nginx-debian.html;
@@ -102,7 +99,7 @@ server {
         ssl_ecdh_curve secp384r1;
         ssl_session_timeout  10m;
         ssl_session_cache shared:SSL:10m;
-        resolver 192.168.42.129 8.8.8.8 valid=300s;
+        resolver 1.1.1.1 8.8.8.8 valid=300s;
         resolver_timeout 5s; 
         add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload";
         add_header X-Frame-Options DENY;
