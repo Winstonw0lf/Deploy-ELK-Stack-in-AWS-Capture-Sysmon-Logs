@@ -135,7 +135,7 @@ ln -s /etc/nginx/sites-available/kibana /etc/nginx/sites-enabled/ &&\
 
 nginx -t &&\
 
-systemctl reload nginx &&\
+systemctl reload nginx
 
 #If UFW is running, allow Nginx connections, both HTTP and HTTPS.
 
@@ -174,38 +174,4 @@ sudo bash -c "echo output {
      manage_template => false
      index => "ssh_auth-%{+YYYY.MM}"
  }
-}" >> /etc/logstash/conf.d/elasticsearch-output.conf &&\
-
-#installs Xterm to open verification in new terminals 
-
-#apt install xterm &&\
-
-
-#verifications are below
-
-#verify connection to elastic search
-
-#xterm -e telnet 192.168.0.101 9200 &&\
-
-
-
-#verify Elastic search data reception
-
-
-#curl -X GET localhost:9200/_cat/indices?v &&\
-
-#Check ssh_auth-2019.05 index;
-
-#xcurl -X GET localhost:9200/ssh_auth-*/_search?pretty &&\
-
-#to test if elastic search is working
-
-#curl http://localhost:9200 &&\
-
-#this commands tests logstash
-
-#sudo -u logstash /usr/share/logstash/bin/logstash --path.settings /etc/logstash -t &&\
-
-
-
-echo please check all the verifications on the terminals that popup. If all is well everything is configured correctly
+}" >> /etc/logstash/conf.d/elasticsearch-output.conf
