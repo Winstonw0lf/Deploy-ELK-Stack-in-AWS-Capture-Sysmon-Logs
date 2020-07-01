@@ -139,7 +139,7 @@ systemctl reload nginx
 
 #If UFW is running, allow Nginx connections, both HTTP and HTTPS.
 
-#sudo ufw allow 'Nginx Full' &&\
+#sudo ufw allow "Nginx Full"
 
 #start Kibana
 
