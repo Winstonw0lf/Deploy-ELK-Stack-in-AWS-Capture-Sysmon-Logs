@@ -40,11 +40,11 @@ systemctl enable --now elasticsearch &&\
 
 #Install Kibana
 
-apt install kibana &&\
+sudo apt install kibana &&\
 
 #open port 5601 for Kibana
 
-ufw allow 5601/tcp &&\
+sudo ufw allow 5601/tcp &&\
 
 #configure Kibana
 
@@ -62,7 +62,7 @@ sudo bash -c 'echo elasticsearch.hosts: ["http://172.31.29.191:9200"] >> /etc/ki
 
 #install Nginx
 
-apt-get install nginx &&\
+sudo apt-get install nginx &&\
 
 #Generate Self-signed SSL/TLS certificates
 
@@ -139,7 +139,7 @@ systemctl reload nginx &&\
 
 #If UFW is running, allow Nginx connections, both HTTP and HTTPS.
 
-ufw allow 'Nginx Full' &&\
+sudo ufw allow 'Nginx Full' &&\
 
 #start Kibana
 
