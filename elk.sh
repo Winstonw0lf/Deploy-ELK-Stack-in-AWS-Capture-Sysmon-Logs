@@ -147,11 +147,7 @@ systemctl enable --now kibana &&\
 
 #Installing Logstash 
 
-#Installing Java 8 if it's not installed
-
-sudo apt-get install openjdk-8-jre-headless -y  &&\
-
-sudo yum install jre-1.8.0-openjdk -y  &&\
+apt install openjdk-11-jdk -y
 
 
 #installing logstash
